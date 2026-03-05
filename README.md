@@ -35,6 +35,17 @@ User → React Dashboard → FastAPI API → Neo4j Knowledge Graph
 
 ## 📷 Screenshots
 
+## 📌 Future Improvements
+
+- AI fraud detection
+- ML risk scoring
+- GST anomaly detection
+- Graph analytics
+
+## 👨‍💻 Author
+
+Vivek Varma
+
 (Add dashboard screenshots here)
 
 ## ⚙️ Run Project
