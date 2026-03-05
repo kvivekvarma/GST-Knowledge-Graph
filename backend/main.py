@@ -21,11 +21,43 @@ password = "12345678"
 driver = GraphDatabase.driver(uri, auth=(username, password))
 
 
+# -------------------------------
+# Home API
+# -------------------------------
 @app.get("/")
 def home():
     return {"message": "Backend Running"}
 
 
+# -------------------------------
+# Vendors API (NEW API ADDED)
+# -------------------------------
+@app.get("/vendors")
+def get_vendors():
+    with driver.session() as session:
+        result = session.run("""
+        MATCH (v:Vendor)
+        RETURN v
+        """)
+
+        vendors = []
+
+        for record in result:
+            v = record["v"]
+
+            vendors.append({
+                "name": v.get("name", ""),
+                "gstin": v.get("gstin", ""),
+                "risk": v.get("risk", "Low"),
+                "location": v.get("location", "Unknown")
+            })
+
+        return vendors
+
+
+# -------------------------------
+# Graph API
+# -------------------------------
 @app.get("/graph")
 def get_graph():
     with driver.session() as session:
@@ -68,3 +100,23 @@ def get_graph():
             })
 
         return {"nodes": nodes, "links": links}
+    # ✅ ADD THIS PART HERE (Audit API)
+@app.get("/audit")
+def get_audit():
+    with driver.session() as session:
+        result = session.run("""
+        MATCH (v:Vendor)-[:FILED]->(i:Invoice)
+        RETURN v.name AS vendor, i.invoice_id AS invoice, i.amount AS amount
+        """)
+
+        logs = []
+
+        for record in result:
+            logs.append({
+                "vendor": record["vendor"],
+                "invoice": record["invoice"],
+                "amount": record["amount"],
+                "action": "GST Filed"
+            })
+
+        return logs
